@@ -1,0 +1,25 @@
+[project]
+name = "mushboom"
+version = "0.1.0"
+description = "Poland mushroom-boom forecast from 14-day weather and TimesFM-3.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.32",
+  "httpx>=0.27",
+  "numpy>=2.0",
+  "pydantic>=2.9",
+]
+
+[project.optional-dependencies]
+timesfm = [
+  "timesfm>=3.0.0",
+  "torch>=2.4",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mushboom"]

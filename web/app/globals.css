@@ -1,0 +1,327 @@
+:root {
+  --ink: #141910;
+  --canopy: #1b2419;
+  --panel: #222b1e;
+  --bark: #3a3228;
+  --moss: #8fa86a;
+  --flush: #f0b429;
+  --rain: #6a8f9c;
+  --spore: #c9cdbe;
+  --mute: #8b9380;
+  --line: rgba(201, 205, 190, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--ink);
+  color: var(--spore);
+}
+
+body {
+  font-family: var(--font-body), "Source Sans 3", sans-serif;
+  letter-spacing: 0.01em;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+a {
+  color: var(--flush);
+}
+
+.app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.topbar,
+.bottombar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.bottombar {
+  border-bottom: 0;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.brand {
+  font-family: var(--font-display), Syne, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 1.05rem;
+}
+
+.brand span {
+  color: var(--flush);
+}
+
+.meta,
+.note {
+  font-family: var(--font-data), "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--mute);
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 340px);
+  min-height: 0;
+}
+
+.map-wrap {
+  position: relative;
+  padding: 1rem 0.5rem 1rem 1.2rem;
+}
+
+.map-svg {
+  width: 100%;
+  height: min(78vh, 860px);
+  display: block;
+}
+
+.county {
+  stroke: #0a1020;
+  stroke-width: 0.45;
+  cursor: pointer;
+  transition: fill 160ms ease, stroke 160ms ease;
+}
+
+.county:hover,
+.county.is-on {
+  stroke: var(--flush);
+  stroke-width: 1.4;
+}
+
+.side {
+  padding: 1rem 1.2rem 1.4rem 0.4rem;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 1rem 1.05rem 1.1rem;
+  min-height: 100%;
+}
+
+.card h2 {
+  font-family: var(--font-display), Syne, sans-serif;
+  font-size: 1.35rem;
+  line-height: 1.15;
+  margin: 0 0 0.35rem;
+}
+
+.woj {
+  font-family: var(--font-data), monospace;
+  font-size: 0.72rem;
+  color: var(--moss);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.score {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin: 1rem 0 0.8rem;
+}
+
+.score b {
+  font-family: var(--font-display), Syne, sans-serif;
+  font-size: 3.4rem;
+  line-height: 0.9;
+  color: var(--flush);
+}
+
+.score small {
+  color: var(--mute);
+  font-family: var(--font-data), monospace;
+}
+
+.stats {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.stats div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--line);
+  padding: 0.38rem 0 0;
+  font-size: 0.92rem;
+}
+
+.stats dt {
+  color: var(--mute);
+}
+
+.stats dd {
+  margin: 0;
+  font-family: var(--font-data), monospace;
+}
+
+.modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.modes button {
+  border: 1px solid var(--line);
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-family: var(--font-data), monospace;
+}
+
+.modes button.is-on,
+.modes button:hover {
+  border-color: var(--flush);
+  color: var(--flush);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem 1rem;
+  align-items: center;
+}
+
+.swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--mute);
+}
+
+.swatch i {
+  width: 0.7rem;
+  height: 0.7rem;
+  display: block;
+}
+
+.heatbar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  color: var(--mute);
+  font-family: var(--font-data), monospace;
+}
+
+.heatbar b {
+  width: 8.5rem;
+  height: 0.55rem;
+  display: block;
+  border-radius: 1px;
+}
+
+.daystrip {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 0.28rem;
+  margin: 0.85rem 0 1rem;
+}
+
+.daystrip button {
+  border: 1px solid var(--line);
+  padding: 0.35rem 0.15rem 0.4rem;
+  text-align: center;
+  min-width: 0;
+}
+
+.daystrip button span {
+  display: block;
+  font-family: var(--font-data), monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.daystrip button em {
+  display: block;
+  font-style: normal;
+  font-family: var(--font-display), Syne, sans-serif;
+  font-size: 0.95rem;
+  color: var(--day, var(--flush));
+}
+
+.daystrip button.is-on {
+  border-color: var(--flush);
+}
+
+.footer-days {
+  margin: 0;
+  min-width: min(36rem, 100%);
+}
+
+.footer-days button {
+  padding: 0.3rem 0.2rem;
+}
+
+.spark {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 36px;
+  margin-top: 1rem;
+}
+
+.spark b {
+  flex: 1;
+  background: var(--flush);
+  opacity: 0.75;
+  min-height: 2px;
+}
+
+.empty {
+  color: var(--mute);
+  max-width: 28ch;
+}
+
+.loading {
+  position: absolute;
+  left: 1.4rem;
+  bottom: 1.2rem;
+  font-family: var(--font-data), monospace;
+  font-size: 0.75rem;
+  color: var(--flush);
+}
+
+@media (max-width: 900px) {
+  .stage {
+    grid-template-columns: 1fr;
+  }
+
+  .side {
+    padding: 0 1rem 1.2rem;
+  }
+
+  .map-svg {
+    height: 62vh;
+  }
+}

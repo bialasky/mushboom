@@ -1,0 +1,9 @@
+{
+  "name": "mushboom",
+  "private": true,
+  "scripts": {
+    "dev:api": "cd forecast && .venv/bin/uvicorn mushboom.api:app --reload --port 8000",
+    "dev:web": "npm --prefix web run dev",
+    "dev": "npm run dev:api & npm run dev:web; wait"
+  }
+}
