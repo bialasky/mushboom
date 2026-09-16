@@ -30,3 +30,14 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000). First forecast takes a bit — 380 counties through Open-Meteo. Results cache for 3 hours in `forecast/data/cache/`.
+
+## Production / Coolify
+
+One Docker image: Next.js on port **3000**, FastAPI on `127.0.0.1:8000` (the Next rewrite talks to localhost). TimesFM and torch are **not** in this image — scores use the kernel + Open-Meteo path.
+
+```bash
+docker build -t mushboom .
+docker run --rm -p 3000:3000 mushboom
+```
+
+In Coolify, build from the repo `Dockerfile` and expose **3000**.
