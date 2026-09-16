@@ -9,7 +9,9 @@ COPY web/package.json web/package-lock.json ./
 RUN npm ci
 COPY web/ ./
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build && npm prune --omit=dev
+# Keep typescript: `next start` loads next.config.ts and will npm-install it
+# at boot if missing (bad for Coolify if the registry is slow or blocked).
+RUN npm run build
 
 # --- Runtime: Python 3.12 + Node 22 ---
 FROM python:3.12-slim-bookworm
