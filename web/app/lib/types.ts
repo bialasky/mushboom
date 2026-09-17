@@ -49,6 +49,8 @@ export type ForecastSnapshot = {
     url: string;
     fetched_at: string;
     by_woj: Record<string, number>;
+    period?: string | null;
+    unknown_location?: number;
     report_total: number;
     note: string;
     error?: string;

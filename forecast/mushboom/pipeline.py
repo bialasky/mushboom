@@ -258,6 +258,8 @@ async def build_snapshot(force: bool = False) -> dict[str, Any]:
                 "url": grzyby.get("url"),
                 "fetched_at": grzyby.get("fetched_at"),
                 "by_woj": grzyby.get("by_woj"),
+                "period": grzyby.get("period"),
+                "unknown_location": grzyby.get("unknown_location"),
                 "report_total": grzyby.get("report_total"),
                 "note": grzyby.get("note"),
                 "error": grzyby.get("error"),

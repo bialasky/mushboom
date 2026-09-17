@@ -146,7 +146,9 @@ export default function Page() {
         </div>
         <p className="note">
           {snapshot?.grzyby.ok
-            ? `${snapshot.grzyby.report_total} grzyby.pl reports. Comparison only.`
+            ? `${snapshot.grzyby.report_total} grzyby.pl reports${
+                snapshot.grzyby.period ? ` (${snapshot.grzyby.period})` : ""
+              }. Comparison only.`
             : "grzyby.pl overlay pending."}{" "}
           {snapshot?.model.timesfm
             ? `TimesFM ${snapshot.model.timesfm} on ${snapshot.model.timesfm_device}.`
