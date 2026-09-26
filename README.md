@@ -29,7 +29,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). First forecast takes a bit — 380 counties through Open-Meteo. Results cache for 3 hours in `forecast/data/cache/`.
+Open [http://localhost:3000](http://localhost:3000). The API rebuilds the forecast once a day at **06:00 Europe/Warsaw** and serves that saved file when you open the page. If the process starts after 06:00 and today's snapshot is missing, it builds once in the background, then waits for the next morning. The file is `forecast/data/cache/snapshot.json`.
 
 ## Production / Coolify
 
@@ -40,4 +40,4 @@ docker build -t mushboom .
 docker run --rm -p 3000:3000 mushboom
 ```
 
-In Coolify, build from the repo `Dockerfile` and expose **3000**.
+In Coolify, build from the repo `Dockerfile` and expose **3000**. Mount `forecast/data/cache` if the morning snapshot should survive a redeploy; otherwise the new container builds once on startup.
