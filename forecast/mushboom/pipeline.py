@@ -11,6 +11,7 @@ from typing import Any
 
 import numpy as np
 
+from mushboom.daily import snapshot_is_fresh
 from mushboom.geography import load_counties
 from mushboom.grzyby import fetch_grzyby, intensity_for_county
 from mushboom.phenology import boom_index, is_city_county, rolling_boom
@@ -21,12 +22,12 @@ DAY_HORIZON = 7
 WEEKDAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
 CACHE_PATH = Path(__file__).resolve().parent.parent / "data" / "cache" / "snapshot.json"
-CACHE_TTL = timedelta(hours=3)
 
 _lock = asyncio.Lock()
 _engine: TimesFMEngine | None = None
 _engine_loaded = False
-_timesfm_task: asyncio.Task[None] | None = None
+snapshot_ready = asyncio.Event()
+snapshot_failed = asyncio.Event()
 
 
 def _get_engine(load: bool) -> TimesFMEngine:
@@ -39,20 +40,18 @@ def _get_engine(load: bool) -> TimesFMEngine:
     return _engine
 
 
-def _read_cache() -> dict[str, Any] | None:
+def read_cached_snapshot() -> dict[str, Any] | None:
+    """Return the stored snapshot. An older file is still served."""
     if not CACHE_PATH.exists():
         return None
     try:
         payload = json.loads(CACHE_PATH.read_text())
     except json.JSONDecodeError:
         return None
-    stamp = payload.get("generated_at")
-    if not stamp:
+    if not isinstance(payload, dict):
         return None
-    generated = datetime.fromisoformat(stamp)
-    if generated.tzinfo is None:
-        generated = generated.replace(tzinfo=UTC)
-    if datetime.now(UTC) - generated > CACHE_TTL:
+    stamp = payload.get("generated_at")
+    if not isinstance(stamp, str) or not stamp:
         return None
     counties = payload.get("counties") or []
     if not counties or "days" not in counties[0]:
@@ -62,7 +61,10 @@ def _read_cache() -> dict[str, Any] | None:
 
 def _write_cache(payload: dict[str, Any]) -> None:
     CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    CACHE_PATH.write_text(json.dumps(payload, ensure_ascii=False))
+    temporary = CACHE_PATH.with_suffix(".tmp")
+    temporary.write_text(json.dumps(payload, ensure_ascii=False))
+    temporary.replace(CACHE_PATH)
+    snapshot_ready.set()
 
 
 def _kernel_at(series: dict[str, Any], end: int, urban: bool) -> dict[str, float]:
@@ -121,24 +123,19 @@ def _timesfm_daily(
     return out
 
 
-async def build_snapshot(force: bool = False) -> dict[str, Any]:
-    if not force:
-        cached = _read_cache()
-        if cached:
-            _schedule_timesfm()
-            return cached
+async def build_snapshot() -> dict[str, Any]:
     async with _lock:
-        if not force:
-            cached = _read_cache()
-            if cached:
-                return cached
+        cached = read_cached_snapshot()
+        if cached is not None and snapshot_is_fresh(cached):
+            snapshot_ready.set()
+            return cached
 
         counties = load_counties()
         weather_task = asyncio.create_task(fetch_county_weather(counties))
         grzyby_task = asyncio.create_task(fetch_grzyby())
         weather_rows, grzyby = await asyncio.gather(weather_task, grzyby_task)
 
-        engine = _get_engine(load=_engine_loaded)
+        engine = _get_engine(load=True)
         by_woj: dict[str, list[int]] = defaultdict(list)
         for idx, county in enumerate(counties):
             by_woj[county["woj"]].append(idx)
@@ -265,20 +262,4 @@ async def build_snapshot(force: bool = False) -> dict[str, Any]:
             "counties": rows,
         }
         _write_cache(payload)
-        _schedule_timesfm()
         return payload
-
-
-def _schedule_timesfm() -> None:
-    global _timesfm_task
-    if _engine_loaded:
-        return
-    if _timesfm_task is not None and not _timesfm_task.done():
-        return
-
-    async def _run() -> None:
-        engine = _get_engine(load=True)
-        if engine.status.available:
-            await build_snapshot(force=True)
-
-    _timesfm_task = asyncio.create_task(_run())
