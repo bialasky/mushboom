@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { DropIcon, FlushStill, NightIcon, RainIcon } from "./art";
+import { DropIcon, ForestPhoto, NightIcon, RainIcon } from "./art";
 import { agreementOf, dayAt, heatFill } from "../lib/color";
 import type { County, DayScore, ViewMode } from "../lib/types";
 
@@ -23,7 +23,9 @@ export function SpecimenCard({ county, mode, dayOffset, onPickDay }: Props) {
   if (!county) {
     return (
       <aside className="card">
-        <FlushStill score={18} />
+        <figure className="still-photo">
+          <ForestPhoto />
+        </figure>
         <p className="empty">Pick a day, then a powiat. Each tile is that weekday’s flush score — not a 7-day blur.</p>
       </aside>
     );
@@ -54,7 +56,9 @@ export function SpecimenCard({ county, mode, dayOffset, onPickDay }: Props) {
             <small>{headline.unit}</small>
           </div>
         </div>
-        <FlushStill score={boom} />
+        <figure className="still-photo">
+          <ForestPhoto />
+        </figure>
       </div>
       <DayStrip county={county} dayOffset={dayOffset} mode={mode} onPickDay={onPickDay} />
       <Spark values={county.history_tail} />

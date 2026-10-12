@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import { Canopy, FlushStill, MushroomMark } from "./components/art";
+import { ForestPhoto } from "./components/art";
 import { PolandMap } from "./components/PolandMap";
 import { SpecimenCard } from "./components/SpecimenCard";
 import { HEAT_CSS, heatFill } from "./lib/color";
@@ -82,10 +82,10 @@ export default function Page() {
 
   return (
     <div className="app">
-      <Canopy />
+      <div className="woods" aria-hidden="true" />
       <header className="topbar">
         <div className="brand">
-          <MushroomMark />
+          <ForestPhoto className="mark" />
           <div>
             <strong>
               mush<span>boom</span>
@@ -116,13 +116,13 @@ export default function Page() {
           </div>
           {!snapshot && !error ? (
             <div className="loading">
-              <FlushStill score={36} />
+              <ForestPhoto className="mark" />
               <p>Reading the duff…</p>
             </div>
           ) : null}
           {error ? (
             <div className="loading">
-              <FlushStill score={12} />
+              <ForestPhoto className="mark" />
               <p>{error}. Is the forecast API on :8000?</p>
             </div>
           ) : null}

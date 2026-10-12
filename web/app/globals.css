@@ -19,10 +19,7 @@ html,
 body {
   margin: 0;
   min-height: 100%;
-  background:
-    radial-gradient(ellipse 90% 55% at 50% -10%, rgba(143, 168, 106, 0.18), transparent 52%),
-    radial-gradient(ellipse 55% 40% at 100% 100%, rgba(58, 50, 40, 0.45), transparent 48%),
-    var(--ink);
+  background: var(--ink);
   color: var(--spore);
 }
 
@@ -60,13 +57,14 @@ a {
   grid-template-rows: auto 1fr auto;
 }
 
-.canopy {
+.woods {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
   pointer-events: none;
   z-index: 0;
+  background:
+    linear-gradient(180deg, rgba(12, 16, 10, 0.2), rgba(12, 16, 10, 0.5)),
+    url("/forest-evening.webp") center / cover no-repeat;
 }
 
 .topbar,
@@ -151,6 +149,8 @@ a {
   height: 2.15rem;
   display: block;
   flex: none;
+  object-fit: cover;
+  object-position: 28% 62%;
 }
 
 .brand span {
@@ -185,8 +185,8 @@ a {
 
 .map-frame {
   background:
-    radial-gradient(ellipse at 50% 42%, rgba(143, 168, 106, 0.12), transparent 62%),
-    #10160e;
+    linear-gradient(180deg, rgba(12, 16, 10, 0.28), rgba(12, 16, 10, 0.48)),
+    url("/forest-evening.webp") center 40% / cover no-repeat;
   border: 1px solid var(--line);
   padding: 0.25rem 0.15rem 0.15rem;
 }
@@ -246,9 +246,19 @@ a {
   align-items: end;
 }
 
-.still {
-  width: 7.1rem;
-  height: auto;
+.still-photo {
+  width: 7.4rem;
+  height: 7.4rem;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.still-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 32% 68%;
   display: block;
 }
 
@@ -492,8 +502,9 @@ a {
   text-align: center;
 }
 
-.loading .still {
+.loading .mark {
   width: 4.6rem;
+  height: 4.6rem;
 }
 
 .loading p {
@@ -541,7 +552,8 @@ a {
     grid-template-columns: 1fr;
   }
 
-  .still {
-    width: 5.4rem;
+  .still-photo {
+    width: 5.6rem;
+    height: 5.6rem;
   }
 }
