@@ -1,6 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
+import { DropIcon, FlushStill, NightIcon, RainIcon } from "./art";
 import { agreementOf, dayAt, heatFill } from "../lib/color";
 import type { County, DayScore, ViewMode } from "../lib/types";
 
@@ -22,6 +23,7 @@ export function SpecimenCard({ county, mode, dayOffset, onPickDay }: Props) {
   if (!county) {
     return (
       <aside className="card">
+        <FlushStill score={18} />
         <p className="empty">Pick a day, then a powiat. Each tile is that weekday’s flush score — not a 7-day blur.</p>
       </aside>
     );
@@ -36,26 +38,46 @@ export function SpecimenCard({ county, mode, dayOffset, onPickDay }: Props) {
   const boom = day?.boom ?? county.boom_now;
   const timesfm = day?.timesfm ?? county.timesfm_plus7;
 
+  const words = headline.value.length > 4;
+
   return (
-    <aside className="card">
-      <p className="woj">{county.woj}</p>
-      <h2>{county.name}</h2>
-      <div className="score">
-        <b>{headline.value}</b>
-        <small>{headline.unit}</small>
+    <aside className="card" style={{ "--plate": heatFill(boom) } as CSSProperties}>
+      <div className="kicker">
+        <p className="woj">{county.woj}</p>
+        <span className="plate-no">№ {String(county.id).padStart(4, "0")}</span>
+      </div>
+      <div className="identity">
+        <div>
+          <h2>{county.name}</h2>
+          <div className={words ? "score score-words" : "score"}>
+            <b>{headline.value}</b>
+            <small>{headline.unit}</small>
+          </div>
+        </div>
+        <FlushStill score={boom} />
       </div>
       <DayStrip county={county} dayOffset={dayOffset} mode={mode} onPickDay={onPickDay} />
+      <Spark values={county.history_tail} />
       <dl className="stats">
         <div>
-          <dt>14-day rain</dt>
+          <dt>
+            <RainIcon />
+            14-day rain
+          </dt>
           <dd>{rain.toFixed(0)} mm</dd>
         </div>
         <div>
-          <dt>Nights, 7d</dt>
+          <dt>
+            <NightIcon />
+            Nights, 7d
+          </dt>
           <dd>{nights.toFixed(1)} °C</dd>
         </div>
         <div>
-          <dt>Humidity, 7d</dt>
+          <dt>
+            <DropIcon />
+            Humidity, 7d
+          </dt>
           <dd>{humidity.toFixed(0)}%</dd>
         </div>
         <div>
@@ -78,6 +100,27 @@ export function SpecimenCard({ county, mode, dayOffset, onPickDay }: Props) {
         </div>
       </dl>
     </aside>
+  );
+}
+
+function Spark({ values }: { values: Array<number | null> }) {
+  if (values.length === 0) return null;
+  return (
+    <div className="spark-block">
+      <p>21-day flush</p>
+      <div className="spark" aria-hidden="true">
+        {values.map((value, index) => (
+          <b
+            key={index}
+            style={{
+              height: `${Math.max(6, value ?? 0)}%`,
+              background: heatFill(value ?? 0),
+              opacity: value == null ? 0.25 : 0.9,
+            }}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 
