@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { ForestPhoto } from "./components/art";
 import { PolandMap } from "./components/PolandMap";
 import { SpecimenCard } from "./components/SpecimenCard";
-import { HEAT_CSS } from "./lib/color";
+import { HEAT_CSS, heatFill } from "./lib/color";
 import type { County, ForecastSnapshot, GeoJSON, ViewMode } from "./lib/types";
 
 const MODES: Array<{ id: ViewMode; label: string }> = [
@@ -77,11 +78,20 @@ export default function Page() {
   const calendar = snapshot?.counties[0]?.days ?? [];
   const picked = calendar.find((day) => day.offset === dayOffset) ?? calendar[0];
 
+  const focus = selected ?? hot ?? null;
+
   return (
     <div className="app">
+      <div className="woods" aria-hidden="true" />
       <header className="topbar">
         <div className="brand">
-          mush<span>boom</span>
+          <ForestPhoto className="mark" />
+          <div>
+            <strong>
+              mush<span>boom</span>
+            </strong>
+            <em>Poland flush forecast</em>
+          </div>
         </div>
         <p className="meta">
           {picked
@@ -94,16 +104,28 @@ export default function Page() {
 
       <main className="stage">
         <div className="map-wrap">
-          <PolandMap
-            geo={geo}
-            counties={counties}
-            mode={mode}
-            dayOffset={dayOffset}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-          />
-          {!snapshot && !error ? <p className="loading">Reading the duff…</p> : null}
-          {error ? <p className="loading">{error}. Is the forecast API on :8000?</p> : null}
+          <div className="map-frame">
+            <PolandMap
+              geo={geo}
+              counties={counties}
+              mode={mode}
+              dayOffset={dayOffset}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+            />
+          </div>
+          {!snapshot && !error ? (
+            <div className="loading">
+              <ForestPhoto className="mark" />
+              <p>Reading the duff…</p>
+            </div>
+          ) : null}
+          {error ? (
+            <div className="loading">
+              <ForestPhoto className="mark" />
+              <p>{error}. Is the forecast API on :8000?</p>
+            </div>
+          ) : null}
         </div>
         <div className="side">
           <SpecimenCard
@@ -117,17 +139,25 @@ export default function Page() {
 
       <footer className="bottombar">
         <div className="daystrip footer-days" role="tablist" aria-label="Forecast day">
-          {calendar.map((day) => (
-            <button
-              key={day.date}
-              type="button"
-              role="tab"
-              className={day.offset === dayOffset ? "is-on" : undefined}
-              onClick={() => setDayOffset(day.offset)}
-            >
-              <span>{day.offset === 0 ? "Today" : day.weekday}</span>
-            </button>
-          ))}
+          {calendar.map((day) => {
+            const scored = focus?.days.find((item) => item.offset === day.offset);
+            const tone =
+              mode === "timesfm" ? (scored?.timesfm ?? scored?.boom) : scored?.boom;
+            const style: CSSProperties | undefined =
+              tone == null ? undefined : { boxShadow: `inset 0 -3px 0 ${heatFill(tone)}` };
+            return (
+              <button
+                key={day.date}
+                type="button"
+                role="tab"
+                className={day.offset === dayOffset ? "is-on" : undefined}
+                style={style}
+                onClick={() => setDayOffset(day.offset)}
+              >
+                <span>{day.offset === 0 ? "Today" : day.weekday}</span>
+              </button>
+            );
+          })}
         </div>
         <div className="modes">
           {MODES.map((item) => (
@@ -145,6 +175,7 @@ export default function Page() {
           {legendFor(mode)}
         </div>
         <p className="note">
+          {snapshot ? `Updated ${formatUpdated(snapshot.generated_at)}. ` : null}
           {snapshot?.grzyby.ok
             ? `${snapshot.grzyby.report_total} grzyby.pl reports${
                 snapshot.grzyby.period ? ` (${snapshot.grzyby.period})` : ""
@@ -161,6 +192,18 @@ export default function Page() {
       </footer>
     </div>
   );
+}
+
+function formatUpdated(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Warsaw",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
 }
 
 function legendFor(mode: ViewMode) {

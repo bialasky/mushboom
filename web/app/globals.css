@@ -23,6 +23,16 @@ body {
   color: var(--spore);
 }
 
+::selection {
+  background: var(--flush);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--flush);
+  outline-offset: 2px;
+}
+
 body {
   font-family: var(--font-body), "Source Sans 3", sans-serif;
   letter-spacing: 0.01em;
@@ -41,9 +51,27 @@ a {
 }
 
 .app {
+  position: relative;
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
+}
+
+.woods {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(180deg, rgba(12, 16, 10, 0.2), rgba(12, 16, 10, 0.5)),
+    url("/forest-evening.webp") center / cover no-repeat;
+}
+
+.topbar,
+.stage,
+.bottombar {
+  position: relative;
+  z-index: 1;
 }
 
 .topbar,
@@ -54,20 +82,75 @@ a {
   gap: 1rem;
   padding: 0.9rem 1.4rem;
   border-bottom: 1px solid var(--line);
+  background: rgba(20, 25, 16, 0.94);
 }
 
 .bottombar {
   border-bottom: 0;
   border-top: 1px solid var(--line);
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "days modes"
+    "legend legend"
+    "note note";
+  align-items: center;
+  gap: 0.7rem 1.2rem;
+}
+
+.footer-days {
+  grid-area: days;
+}
+
+.modes {
+  grid-area: modes;
+  justify-self: end;
+}
+
+.legend {
+  grid-area: legend;
+}
+
+.note {
+  grid-area: note;
 }
 
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
   font-family: var(--font-display), Syne, sans-serif;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  font-size: 1.05rem;
+  font-size: 1.15rem;
+}
+
+.brand strong {
+  display: block;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.brand em {
+  display: block;
+  margin-top: 0.28rem;
+  font-style: normal;
+  font-family: var(--font-data), "IBM Plex Mono", monospace;
+  font-size: 0.66rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.mark {
+  width: 2.15rem;
+  height: 2.15rem;
+  display: block;
+  flex: none;
+  object-fit: cover;
+  object-position: 28% 62%;
 }
 
 .brand span {
@@ -81,6 +164,13 @@ a {
   color: var(--mute);
 }
 
+.meta {
+  margin: 0;
+  border: 1px solid var(--line);
+  padding: 0.4rem 0.7rem;
+  background: rgba(20, 25, 16, 0.45);
+}
+
 .stage {
   position: relative;
   display: grid;
@@ -90,7 +180,15 @@ a {
 
 .map-wrap {
   position: relative;
-  padding: 1rem 0.5rem 1rem 1.2rem;
+  padding: 1rem 0.6rem 1rem 1.2rem;
+}
+
+.map-frame {
+  background:
+    linear-gradient(180deg, rgba(12, 16, 10, 0.28), rgba(12, 16, 10, 0.48)),
+    url("/forest-evening.webp") center 40% / cover no-repeat;
+  border: 1px solid var(--line);
+  padding: 0.25rem 0.15rem 0.15rem;
 }
 
 .map-svg {
@@ -100,8 +198,8 @@ a {
 }
 
 .county {
-  stroke: #0a1020;
-  stroke-width: 0.45;
+  stroke: #10160e;
+  stroke-width: 0.55;
   cursor: pointer;
   transition: fill 160ms ease, stroke 160ms ease;
 }
@@ -117,10 +215,51 @@ a {
 }
 
 .card {
-  background: var(--panel);
+  background:
+    linear-gradient(180deg, rgba(240, 180, 41, 0.07), transparent 22%),
+    var(--panel);
   border: 1px solid var(--line);
+  border-top: 3px solid var(--plate, var(--line));
   padding: 1rem 1.05rem 1.1rem;
   min-height: 100%;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+}
+
+.kicker {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.8rem;
+}
+
+.plate-no {
+  font-family: var(--font-data), monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--mute);
+}
+
+.identity {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.4rem 0.6rem;
+  align-items: end;
+}
+
+.still-photo {
+  width: 7.4rem;
+  height: 7.4rem;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.still-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 32% 68%;
+  display: block;
 }
 
 .card h2 {
@@ -131,6 +270,7 @@ a {
 }
 
 .woj {
+  margin: 0;
   font-family: var(--font-data), monospace;
   font-size: 0.72rem;
   color: var(--moss);
@@ -150,6 +290,18 @@ a {
   font-size: 3.4rem;
   line-height: 0.9;
   color: var(--flush);
+}
+
+.score-words {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.score-words b {
+  font-size: 1.45rem;
+  line-height: 1.15;
+  max-width: 16ch;
 }
 
 .score small {
@@ -173,7 +325,16 @@ a {
 }
 
 .stats dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   color: var(--mute);
+}
+
+.stats svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex: none;
 }
 
 .stats dd {
@@ -276,11 +437,24 @@ a {
 
 .footer-days {
   margin: 0;
-  min-width: min(36rem, 100%);
+  min-width: 0;
 }
 
 .footer-days button {
   padding: 0.3rem 0.2rem;
+}
+
+.spark-block {
+  margin: 0.15rem 0 0.95rem;
+}
+
+.spark-block p {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-data), monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
 }
 
 .spark {
@@ -288,7 +462,7 @@ a {
   align-items: flex-end;
   gap: 2px;
   height: 36px;
-  margin-top: 1rem;
+  margin-top: 0;
 }
 
 .spark b {
@@ -303,13 +477,38 @@ a {
   max-width: 28ch;
 }
 
+.note {
+  margin: 0;
+  max-width: none;
+  text-align: left;
+}
+
 .loading {
   position: absolute;
-  left: 1.4rem;
-  bottom: 1.2rem;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.85rem 1.2rem 0.75rem;
+  background: rgba(20, 25, 16, 0.86);
+  border: 1px solid var(--line);
   font-family: var(--font-data), monospace;
   font-size: 0.75rem;
   color: var(--flush);
+  text-align: center;
+}
+
+.loading .mark {
+  width: 4.6rem;
+  height: 4.6rem;
+}
+
+.loading p {
+  margin: 0;
 }
 
 @media (max-width: 900px) {
@@ -321,7 +520,40 @@ a {
     padding: 0 1rem 1.2rem;
   }
 
+  .bottombar,
+  .topbar {
+    padding: 0.8rem 1rem;
+  }
+
   .map-svg {
-    height: 62vh;
+    height: auto;
+  }
+
+  .bottombar {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "days"
+      "modes"
+      "legend"
+      "note";
+  }
+
+  .modes {
+    justify-self: start;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 520px) {
+  .identity {
+    grid-template-columns: 1fr;
+  }
+
+  .still-photo {
+    width: 5.6rem;
+    height: 5.6rem;
   }
 }
